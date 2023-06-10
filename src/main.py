@@ -412,7 +412,7 @@ def neofetch():
         else:
             device_data.append(apple_logo[i])
     
-    device_data[1] += f"{Colors.ENDC}{device_name:>20}"
+    device_data[1] += f"{Colors.ENDC}{device_name:>27}"
     device_data[2] += f"{Colors.ENDC}{device_version:>11}"
     device_data[3] += f"{Colors.ENDC}{device_model:>23}"
     device_data[4] += f"{Colors.ENDC}{device_serial:>17}"
