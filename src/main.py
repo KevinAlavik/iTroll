@@ -1,5 +1,7 @@
 import subprocess
 import os
+import sys
+import time
 import libimobiledevice
 
 class Config:
@@ -19,14 +21,14 @@ class Colors:
 
 def print_banner():
     banner = """
-  _ _______        _ _
- (_)__   __|      | | |
-  _   | |_ __ ___ | | |
- | |  | | '__/ _ \| | |
- | |  | | | | (_) | | |
- |_|  |_|_|  \___/|_|_|
+    _ _______        _ _
+    (_)__   __|      | | |
+    _   | |_ __ ___ | | |
+    | |  | | '__/ _ \| | |
+    | |  | | | | (_) | | |
+    |_|  |_|_|  \___/|_|_| 
 
-"""
+    """
     print(Colors.OKBLUE + banner + Colors.ENDC)
 
 
@@ -88,7 +90,7 @@ def main():
         print(f"  {Colors.OKGREEN}4) Exit Recovery Mode{Colors.ENDC}")
         print(f"  {Colors.OKGREEN}5) App Manager{Colors.ENDC}")
         print(f"  {Colors.OKGREEN}6) Neofetch{Colors.ENDC}\n")
-        option = input(f"{Colors.WARNING}Option:{Colors.ENDC} ")
+        option = input(f"{Colors.WARNING}Option (or exit to exit):{Colors.ENDC} ")
         optionAction(option)
     else:
         print(Colors.FAIL + "No iOS devices connected." + Colors.ENDC)
@@ -182,7 +184,7 @@ def optionAction(option):
     elif option == "2":
         # Jailbreak option
         jailbreak_option = input(
-            f"{Colors.WARNING}Select jailbreak option (Unc0ver, Palera1n): {Colors.ENDC}")
+            f"{Colors.WARNING}Select jailbreak option (Unc0ver, Palera1n) or exit to exit: {Colors.ENDC}")
 
         if jailbreak_option.lower() == "unc0ver":
             working_versions = ['11.0', '11.1', '11.2', '11.3', '11.4', '12.0', '12.1', '12.1.1', '12.1.2', '12.1.3',
@@ -255,38 +257,50 @@ def optionAction(option):
             else:
                 print(
                     Colors.FAIL + f"No connected devices within the supported versions and models found." + Colors.ENDC)
-
+        
+        elif jailbreak_option.lower() == "exit":
+            clear_screen()
+            main()
         else:
             print(Colors.FAIL + "Invalid jailbreak option selected." + Colors.ENDC)
 
     elif option == "3":
-        if os.path.isfile("/usr/local/bin/palera1n"):
-            subprocess.run(["palera1n", "--enter-recovery"],
-                           stdout=open(os.devnull, 'wb'))
-        else:
-            try:
-                subprocess.run(["sudo", "mkdir", "-p", "/usr/local/bin"])
-                subprocess.run(
-                    ["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
-                subprocess.run(
-                    ["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
+        cont = input(f"{Colors.WARNING}Do you want to continue (y/n). This will put your phone into DFU/Recovery mode: {Colors.ENDC}")
+        if cont.lower() == "n":
+            print(f"{Colors.OKBLUE}[Action]{Colors.OKGREEN} Cancled {Colors.FAIL}\"recovery_call\"{Colors.ENDC}")
+            time.sleep(2)
+            clear_screen()
+            main()
+        elif cont.lower() == "y":
+            if os.path.isfile("/usr/local/bin/palera1n"):
+                subprocess.run(["palera1n", "--enter-recovery"],
+                            stdout=open(os.devnull, 'wb'))
+            else:
                 try:
-                    subprocess.run(["palera1n", "--enter-recovery"],
-                                   stdout=open(os.devnull, 'wb'))
-                    print(
-                        f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully entered recovery mode!")
+                    subprocess.run(["sudo", "mkdir", "-p", "/usr/local/bin"])
+                    subprocess.run(
+                        ["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
+                    subprocess.run(
+                        ["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
+                    try:
+                        subprocess.run(["palera1n", "--exit-recovery"],
+                                    stdout=open(os.devnull, 'wb'))
+                        print(
+                            f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully entered recovery mode!")
+                    except subprocess.CalledProcessError as e:
+                        print(
+                            f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to enter recovery mode: {e}")
+                    except Exception as e:
+                        print(
+                            f"{Colors.WARNING} [Error] {Colors.FAIL}An unexpected error occurred: {e}")
                 except subprocess.CalledProcessError as e:
                     print(
-                        f"{Colors.WARNING} [Error] {Colors.FAIL}Failed to enter recovery mode: {e}")
+                        f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
                 except Exception as e:
                     print(
-                        f"{Colors.WARNING} [Error] {Colors.FAIL}An unexpected error occurred: {e}")
-            except subprocess.CalledProcessError as e:
-                print(
-                    f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
-            except Exception as e:
-                print(
-                    f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                        f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+        else:
+            print(f"{Colors.FAIL} Invalid input{Colors.ENDC}")
     elif option == "4":
 
         if os.path.isfile("/usr/local/bin/palera1n"):
@@ -353,6 +367,9 @@ def optionAction(option):
     elif option == "6":
         clear_screen()
         neofetch()
+    elif option.lower() == "exit":
+        clear_screen()
+        sys.exit()
     else:
         clear_screen()
         print(Colors.FAIL + "Invalid option selected." + Colors.ENDC)
@@ -412,11 +429,11 @@ def neofetch():
         else:
             device_data.append(apple_logo[i])
     
-    device_data[1] += f"{Colors.ENDC}{device_name:>20}"
-    device_data[2] += f"{Colors.ENDC}{device_version:>11}"
-    device_data[3] += f"{Colors.ENDC}{device_model:>23}"
-    device_data[4] += f"{Colors.ENDC}{device_serial:>17}"
-    device_data[5] += f"{Colors.ENDC}{udid:>39}" if udid else ""
+    device_data[1] += f"{'-'*27}{Colors.ENDC}{device_name}"
+    device_data[2] += f"{'-'*28}{Colors.ENDC}{device_version}"
+    device_data[3] += f"{'-'*35}{Colors.ENDC}{device_model}"
+    device_data[4] += f"{'-'*28}{Colors.ENDC}{device_serial}"
+    device_data[5] += f"{'-'*38}{Colors.ENDC}{udid}" if udid else ""
 
     output = '\n'.join(device_data)
     print("")
