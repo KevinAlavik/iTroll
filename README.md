@@ -1,6 +1,4 @@
 # iTroll
-The Swiss Army Knife for jailbreaking iOS
-
 ## Installing
 ```bash
 git clone https://github.com/kevinalavik/iTroll
