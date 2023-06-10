@@ -2,7 +2,6 @@ import subprocess
 import os
 import libimobiledevice
 
-
 class Config:
     bypass_jailbreak_warning = False
 
@@ -87,7 +86,8 @@ def main():
         print(f"  {Colors.OKGREEN}2) Jailbreak{Colors.ENDC}")
         print(f"  {Colors.OKGREEN}3) Enter Recovery Mode{Colors.ENDC}")
         print(f"  {Colors.OKGREEN}4) Exit Recovery Mode{Colors.ENDC}")
-        print(f"  {Colors.OKGREEN}5) App Manager{Colors.ENDC}\n")
+        print(f"  {Colors.OKGREEN}5) App Manager{Colors.ENDC}")
+        print(f"  {Colors.OKGREEN}6) Neofetch{Colors.ENDC}\n")
         option = input(f"{Colors.WARNING}Option:{Colors.ENDC} ")
         optionAction(option)
     else:
@@ -108,6 +108,8 @@ def optionAction(option):
         print("-" * 20)
         print(Colors.HEADER + "Device Information:" + Colors.ENDC)
         print("")
+        udid_list = [device["UniqueDeviceID"] for device in connected_devices]
+        udid = udid_list[0]
         for i, device in enumerate(connected_devices):
             device_info = subprocess.check_output(
                 ["ideviceinfo", "-u", device['UniqueDeviceID']]).decode("utf-8")
@@ -130,18 +132,23 @@ def optionAction(option):
             device_battery = device_details.get('BatteryCurrentCapacity')
 
             print(f"{Colors.OKBLUE}{device_name}{Colors.ENDC}")
-            print(f"  {Colors.OKGREEN}iOS {device_version}{Colors.ENDC}")
-            print(f"  {Colors.WARNING}Model: {device_model}{Colors.ENDC}")
-            print(f"  {Colors.WARNING}Serial Number: {device_serial}{Colors.ENDC}")
+            print(
+                f"  {Colors.WARNING}iOS: {Colors.OKGREEN}{device_version}{Colors.ENDC}")
+            print(f"  {Colors.WARNING}UDID: {Colors.OKGREEN}{udid}{Colors.ENDC}")
+            print(
+                f"  {Colors.WARNING}Model: {Colors.OKGREEN}{device_model}{Colors.ENDC}")
+            print(
+                f"  {Colors.WARNING}Serial Number: {Colors.OKGREEN}{device_serial}{Colors.ENDC}")
 
             if device_color:
-                print(f"  {Colors.WARNING}Color: {device_color}{Colors.ENDC}")
+                print(
+                    f"  {Colors.WARNING}Color: {Colors.OKGREEN}{device_color}{Colors.ENDC}")
             if device_capacity:
                 print(
-                    f"  {Colors.WARNING}Capacity: {device_capacity} GB{Colors.ENDC}")
+                    f"  {Colors.WARNING}Capacity: {Colors.OKGREEN}{device_capacity} GB{Colors.ENDC}")
             if device_battery:
                 print(
-                    f"  {Colors.WARNING}Battery: {device_battery}%{Colors.ENDC}")
+                    f"  {Colors.WARNING}Battery: {Colors.OKGREEN}{device_battery}%{Colors.ENDC}")
 
             activation_state = device_details.get('ActivationState', 'Unknown')
             baseband_version = device_details.get('BasebandVersion', 'Unknown')
@@ -154,14 +161,21 @@ def optionAction(option):
             sim_status = device_details.get('SIMStatus', 'Unknown')
             wifi_address = device_details.get('WiFiAddress', 'Unknown')
 
-            print(f" {Colors.WARNING} Activation State: {activation_state}")
-            print(f" {Colors.WARNING} Baseband Version: {baseband_version}")
-            print(f" {Colors.WARNING} Bluetooth Address: {bluetooth_address}")
-            print(f" {Colors.WARNING} Firmware Version: {firmware_version}")
-            print(f" {Colors.WARNING} Hardware Model: {hardware_model}")
-            print(f" {Colors.WARNING} MLB Serial Number: {mlb_serial_number}")
-            print(f" {Colors.WARNING} SIM Status: {sim_status}")
-            print(f"  {Colors.WARNING}WiFi Address: {wifi_address}{Colors.ENDC}")
+            print(
+                f" {Colors.WARNING} Activation State: {Colors.OKGREEN}{activation_state}")
+            print(
+                f" {Colors.WARNING} Baseband Version: {Colors.OKGREEN}{baseband_version}")
+            print(
+                f" {Colors.WARNING} Bluetooth Address: {Colors.OKGREEN}{bluetooth_address}")
+            print(
+                f" {Colors.WARNING} Firmware Version: {Colors.OKGREEN}{firmware_version}")
+            print(
+                f" {Colors.WARNING} Hardware Model: {Colors.OKGREEN}{hardware_model}")
+            print(
+                f" {Colors.WARNING} MLB Serial Number: {Colors.OKGREEN}{mlb_serial_number}")
+            print(f" {Colors.WARNING} SIM Status: {Colors.OKGREEN}{sim_status}")
+            print(
+                f"  {Colors.WARNING}WiFi Address: {Colors.OKGREEN}{wifi_address}{Colors.ENDC}")
 
             print("")
 
@@ -303,27 +317,32 @@ def optionAction(option):
                 print(
                     f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
     elif option == "5":
+
         clear_screen()
         print_banner()
         udid_list = [device["UniqueDeviceID"] for device in connected_devices]
 
         if udid_list:
             udid = udid_list[0]
-            print(f"{Colors.OKBLUE}[Action]{Colors.OKGREEN} Getting apps for UDID: {Colors.WARNING}{udid_list[0]}{Colors.ENDC}")
+            print(
+                f"{Colors.OKBLUE}[Action]{Colors.OKGREEN} Getting apps for UDID: {Colors.WARNING}{udid_list[0]}{Colors.ENDC}")
 
             try:
-                ideviceinstaller_output = subprocess.check_output(["ideviceinstaller", "-u", udid, "--list-apps"]).decode("utf-8")
+                ideviceinstaller_output = subprocess.check_output(
+                    ["ideviceinstaller", "-u", udid, "--list-apps"]).decode("utf-8")
                 app_list = ideviceinstaller_output.strip().splitlines()
 
                 if app_list:
                     app_info_array = []
-                    for apps in app_list[1:]:  # Skip the first line with CFBundleIdentifier, CFBundleVersion, CFBundleDisplayName
+                    # Skip the first line with CFBundleIdentifier, CFBundleVersion, CFBundleDisplayName
+                    for apps in app_list[1:]:
                         app = apps.strip().split()
-                        print(Colors.FAIL + "[App] " + Colors.OKBLUE + str(app[0]).replace(",", '') + Colors.ENDC + " · " + Colors.WARNING + str(app[2:]).replace('[', '').replace('\"', '').replace("'", '').replace("]", '').replace(",", '') + Colors.ENDC)
+                        print(Colors.FAIL + "[App] " + Colors.OKBLUE + str(app[0]).replace(",", '') + Colors.ENDC + " · " + Colors.WARNING + str(
+                            app[2:]).replace('[', '').replace('\"', '').replace("'", '').replace("]", '').replace(",", '') + Colors.ENDC)
                     print("- - - - - - - - - -")
-                    print(f"{Colors.OKGREEN}[Finished]{Colors.OKBLUE} App amount: {Colors.FAIL}{len(app_list) - 1}{Colors.ENDC}")
-                    
-                
+                    print(
+                        f"{Colors.OKGREEN}[Finished]{Colors.OKBLUE} App amount: {Colors.FAIL}{len(app_list) - 1}{Colors.ENDC}")
+
                 else:
                     print("No apps installed.")
 
@@ -331,6 +350,9 @@ def optionAction(option):
                 print(f"Error: {str(e)}")
         else:
             print("No connected iOS devices found.")
+    elif option == "6":
+        clear_screen()
+        neofetch()
     else:
         clear_screen()
         print(Colors.FAIL + "Invalid option selected." + Colors.ENDC)
@@ -340,6 +362,66 @@ def optionAction(option):
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def neofetch():
+
+    apple_logo = [
+        "\033[0;32m                    c.'",
+        "\033[0;33m                 ,xNMM.        Device Name",
+        "\033[0;31m               .OMMMMo         iOS Version",
+        "\033[0;31m               lMM\\\"           Model",
+        "\033[0;35m     .;loddo:.  .olloddol;.    Serial Number",
+        "\033[0;34m   cKMMMMMMMMMMNWMMMMMMMMMM0:  UDID",
+        "\033[0;36m .KMMMMMMMMMMMMMMMMMMMMMMMWd.  ",
+        "\033[0;32m XMMMMMMMMMMMMMMMMMMMMMMMX.        ",
+        "\033[0;33m;MMMMMMMMMMMMMMMMMMMMMMMM:",
+        "\033[0;31m:MMMMMMMMMMMMMMMMMMMMMMMM:",
+        "\033[0;31m.MMMMMMMMMMMMMMMMMMMMMMMX.",
+        "\033[0;35m kMMMMMMMMMMMMMMMMMMMMMMMMWd.",
+        "\033[0;34m 'XMMMMMMMMMMMMMMMMMMMMMMMMMMk",
+        "\033[0;32m  'XMMMMMMMMMMMMMMMMMMMMMMMMK.",
+        "\033[0;36m    kMMMMMMMMMMMMMMMMMMMMMMd",
+        "\033[0;33m     ;KMMMMMMMWXXWMMMMMMMk.",
+        "\033[0;34m       \"cooc*\"    \"*coo'\""
+    ]
+
+    connected_devices = get_connected_ios_devices()
+    udid_list = [device["UniqueDeviceID"] for device in connected_devices]
+    udid = udid_list[0]
+
+    # Retrieve device information outside the loop
+    device_info = subprocess.check_output(["ideviceinfo", "-u", connected_devices[0]['UniqueDeviceID']]).decode("utf-8")
+    device_info_lines = device_info.strip().splitlines()
+    device_details = {}
+    for line in device_info_lines:
+        key, value = line.split(": ", 1)
+        device_details[key] = value
+
+    device_name = device_details.get('DeviceName', 'Unknown Device')
+    device_version = device_details.get('ProductVersion', 'Unknown Version')
+    device_model = device_details.get('ProductType', 'Unknown Model')
+    device_serial = device_details.get('SerialNumber', 'Unknown Serial')
+    device_color = device_details.get('DeviceColor')
+    device_capacity = device_details.get('DeviceCapacity')
+    device_battery = device_details.get('BatteryCurrentCapacity')
+    device_type = device_details.get('ProductType')
+
+    device_data = []
+    for i in range(0, 17):
+        if i == 0:
+            device_data.append(f"{apple_logo[i]}{' ' * 30}")
+        else:
+            device_data.append(apple_logo[i])
+    
+    device_data[1] += f"{Colors.ENDC}{device_name:>20}"
+    device_data[2] += f"{Colors.ENDC}{device_version:>11}"
+    device_data[3] += f"{Colors.ENDC}{device_model:>23}"
+    device_data[4] += f"{Colors.ENDC}{device_serial:>17}"
+    device_data[5] += f"{Colors.ENDC}{udid:>39}" if udid else ""
+
+    output = '\n'.join(device_data)
+    print("")
+    print(output)
+    print("")
 
 if __name__ == "__main__":
     main()

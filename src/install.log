@@ -1,0 +1,8 @@
+[15:22:50 2023-06-10] FETCHING Version 2.20.0
+[15:22:50 2023-06-10] DOWNLOADING https://github.com/spicetify/spicetify-cli/releases/download/v2.20.0/spicetify-2.20.0-darwin-amd64.tar.gz
+[15:22:51 2023-06-10] EXTRACTING /Users/kevin/.spicetify/spicetify.tar.gz
+[15:22:51 2023-06-10] SETTING EXECUTABLE PERMISSIONS TO /Users/kevin/.spicetify/spicetify
+[15:22:51 2023-06-10] REMOVING /Users/kevin/.spicetify/spicetify.tar.gz
+[15:22:51 2023-06-10] spicetify path already set in /Users/kevin/.zshrc, continuing...
+[15:22:51 2023-06-10] spicetify v2.20.0 was installed successfully to /Users/kevin/.spicetify
+[15:22:51 2023-06-10] Run 'spicetify --help' to get started
