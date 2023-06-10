@@ -1,9 +1,10 @@
 import subprocess
 import os
+import libimobiledevice
 
 
 class Config:
-    bypass_jailbreak_warning = True
+    bypass_jailbreak_warning = False
 
 # ANSI escape codes for colored output
 
@@ -85,7 +86,8 @@ def main():
         print(f"  {Colors.OKGREEN}1) Device Info{Colors.ENDC}")
         print(f"  {Colors.OKGREEN}2) Jailbreak{Colors.ENDC}")
         print(f"  {Colors.OKGREEN}3) Enter Recovery Mode{Colors.ENDC}")
-        print(f"  {Colors.OKGREEN}4) Exit Recovery Mode{Colors.ENDC}\n")
+        print(f"  {Colors.OKGREEN}4) Exit Recovery Mode{Colors.ENDC}")
+        print(f"  {Colors.OKGREEN}5) App Manager{Colors.ENDC}\n")
         option = input(f"{Colors.WARNING}Option:{Colors.ENDC} ")
         optionAction(option)
     else:
@@ -99,6 +101,8 @@ def main():
 
 def optionAction(option):
     connected_devices = get_connected_ios_devices()
+    clear_screen()
+    print_banner()
 
     if option == "1":
         print("-" * 20)
@@ -206,7 +210,8 @@ def optionAction(option):
                     available_devices.append(device)
 
             if available_devices or Config.bypass_jailbreak_warning:
-                print(f"Using Palera1n to jailbreak {device.get('DeviceName')} ({device_version}.")
+                print(
+                    f"Using Palera1n to jailbreak {device.get('DeviceName')} ({device_version}.")
 
                 try:
                     subprocess.run(
@@ -269,6 +274,7 @@ def optionAction(option):
                 print(
                     f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
     elif option == "4":
+
         if os.path.isfile("/usr/local/bin/palera1n"):
             subprocess.run(["palera1n", "--exit-recovery"],
                            stdout=open(os.devnull, 'wb'))
@@ -296,8 +302,43 @@ def optionAction(option):
             except Exception as e:
                 print(
                     f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+    elif option == "5":
+        clear_screen()
+        print_banner()
+        udid_list = [device["UniqueDeviceID"] for device in connected_devices]
+
+        if udid_list:
+            udid = udid_list[0]
+            print(f"{Colors.OKBLUE}[Action]{Colors.OKGREEN} Getting apps for UDID: {Colors.WARNING}{udid_list[0]}{Colors.ENDC}")
+
+            try:
+                ideviceinstaller_output = subprocess.check_output(["ideviceinstaller", "-u", udid, "--list-apps"]).decode("utf-8")
+                app_list = ideviceinstaller_output.strip().splitlines()
+
+                if app_list:
+                    app_info_array = []
+                    for apps in app_list[1:]:  # Skip the first line with CFBundleIdentifier, CFBundleVersion, CFBundleDisplayName
+                        app = apps.strip().split()
+                        print(Colors.FAIL + "[App] " + Colors.OKBLUE + str(app[0]).replace(",", '') + Colors.ENDC + " · " + Colors.WARNING + str(app[2:]).replace('[', '').replace('\"', '').replace("'", '').replace("]", '').replace(",", '') + Colors.ENDC)
+                    print("- - - - - - - - - -")
+                    print(f"{Colors.OKGREEN}[Finished]{Colors.OKBLUE} App amount: {Colors.FAIL}{len(app_list) - 1}{Colors.ENDC}")
+                    
+                
+                else:
+                    print("No apps installed.")
+
+            except subprocess.CalledProcessError as e:
+                print(f"Error: {str(e)}")
+        else:
+            print("No connected iOS devices found.")
     else:
+        clear_screen()
         print(Colors.FAIL + "Invalid option selected." + Colors.ENDC)
+        main()
+
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 if __name__ == "__main__":
