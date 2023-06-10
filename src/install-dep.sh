@@ -24,5 +24,5 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         exit 1
     fi
 fi
-
+pip3 install libimobiledevice
 echo "Installed everything needed"
