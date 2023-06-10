@@ -3,7 +3,7 @@ import os
 
 
 class Config:
-    bypass_jailbreak_warning = True
+    bypass_jailbreak_warning = False
 
 # ANSI escape codes for colored output
 
