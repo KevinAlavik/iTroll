@@ -3,7 +3,7 @@ The Swiss Army Knife for jailbreaking iOS
 
 ## Installing
 ```bash
-git clone https://github.com/kevinalavik/iTrol
+git clone https://github.com/kevinalavik/iTroll
 ```
 ```bash
 cd iTroll/src && bash install-dep.sh 
