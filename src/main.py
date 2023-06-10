@@ -1,7 +1,13 @@
 import subprocess
 import os
 
+
+class Config:
+    bypass_jailbreak_warning = True
+
 # ANSI escape codes for colored output
+
+
 class Colors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -170,31 +176,22 @@ def optionAction(option):
                 if device_version and device_version in working_versions:
                     available_devices.append(device)
 
-            if available_devices:
-                print("Available devices for Unc0ver:")
-                for i, device in enumerate(available_devices):
+            if available_devices or Config.bypass_jailbreak_warning:
+                print(
+                    f"Using Unc0ver to jailbreak {device.get('DeviceName')} ({device_version}).")
+                # installation_success = install_ipa(
+                #     "ipas/unc0ver_8.0.2.signed.ipa")
+                installation_success = False
+                if installation_success:
                     print(
-                        f"{Colors.OKBLUE}{i + 1}. {device['DeviceName']} ({device['DeviceVersion']}){Colors.ENDC}")
-
-                device_index = input(
-                    f"{Colors.WARNING}Select device by index: {Colors.ENDC}")
-                if device_index.isdigit() and 0 < int(device_index) <= len(available_devices):
-                    selected_device = available_devices[int(device_index) - 1]
-                    print(
-                        f"Using Unc0ver to jailbreak {selected_device['DeviceName']} ({selected_device['DeviceVersion']}).")
-                    installation_success = install_ipa(
-                        "ipas/unc0ver_8.0.2.signed.ipa")
-                    if installation_success:
-                        print(
-                            f"{Colors.OKBLUE}Successfully installed unc0ver on the device.{Colors.OKGREEN} Now open unc0ver and press 'Jailbreak'!")
-                    else:
-                        print(
-                            f"{Colors.WARNING}[Critical Error] {Colors.FAIL}Failed to install unc0ver on the device.")
+                        f"{Colors.OKBLUE}Successfully installed unc0ver on the device.{Colors.OKGREEN} Now open unc0ver and press 'Jailbreak'!")
                 else:
-                    print(Colors.FAIL + "Invalid device index." + Colors.ENDC)
+                    print(
+                        f"{Colors.WARNING}[Critical Error] {Colors.FAIL}Failed to install unc0ver on the device.")
             else:
-                print(Colors.FAIL + f"Error: No connected devices running supported versions found." + Colors.ENDC)
-               
+                print(
+                    Colors.FAIL + f"Error: No connected devices running supported versions found." + Colors.ENDC)
+
         elif jailbreak_option.lower() == "palera1n":
             working_versions = ['15.0', '15.1', '15.2', '15.3', '15.4', '15.5',
                                 '15.6', '15.7', '15.8', '16.0', '16.1', '16.2', '16.3', '16.4']
@@ -208,44 +205,34 @@ def optionAction(option):
                 if device_version in working_versions and device_model in working_models:
                     available_devices.append(device)
 
-            if available_devices:
-                print("Available devices for Palera1n:")
-                for i, device in enumerate(available_devices):
-                    print(
-                        f"{Colors.OKBLUE}{i + 1}. {device['DeviceName']} ({device['DeviceVersion']}){Colors.ENDC}")
+            if available_devices or Config.bypass_jailbreak_warning:
+                print(f"Using Palera1n to jailbreak {device.get('DeviceName')} ({device_version}.")
 
-                device_index = input(
-                    f"{Colors.WARNING}Select device by index: {Colors.ENDC}")
-                if device_index.isdigit() and 0 < int(device_index) <= len(available_devices):
-                    selected_device = available_devices[int(device_index) - 1]
+                try:
+                    subprocess.run(
+                        ["sudo", "mkdir", "-p", "/usr/local/bin"])
+                    subprocess.run(
+                        ["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
+                    subprocess.run(
+                        ["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
                     print(
-                        f"Using Palera1n to jailbreak {selected_device['DeviceName']} ({selected_device['DeviceVersion']}).")
-
+                        f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully installed palera1n to {Colors.HEADER} PATH {Colors.OKGREEN} will now be continuing {Colors.ENDC}")
                     try:
-                        subprocess.run(
-                            ["sudo", "mkdir", "-p", "/usr/local/bin"])
-                        subprocess.run(
-                            ["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
-                        subprocess.run(
-                            ["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
+                        subprocess.run(["palera1n"])
                         print(
-                            f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully installed palera1n to {Colors.HEADER} PATH {Colors.OKGREEN} will now be continuing {Colors.ENDC}")
-                        try:
-                            subprocess.run(["palera1n"])
-                            print(
-                                f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully jailbreaked {Colors.HEADER} PATH {Colors.OKGREEN} will now be restarting your device!")
-                        except subprocess.CalledProcessError as e:
-                            print(
-                                f"{Colors.WARNING} [Very Critical Error] {Colors.FAIL}Failed to jailbreak: {e}")
-                        except Exception as e:
-                            print(
-                                f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                            f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully jailbreaked {Colors.HEADER} PATH {Colors.OKGREEN} will now be restarting your device!")
                     except subprocess.CalledProcessError as e:
                         print(
-                            f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
+                            f"{Colors.WARNING} [Very Critical Error] {Colors.FAIL}Failed to jailbreak: {e}")
                     except Exception as e:
                         print(
                             f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                except subprocess.CalledProcessError as e:
+                    print(
+                        f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
+                except Exception as e:
+                    print(
+                        f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
             else:
                 print(
                     Colors.FAIL + f"No connected devices within the supported versions and models found." + Colors.ENDC)
@@ -255,42 +242,60 @@ def optionAction(option):
 
     elif option == "3":
         if os.path.isfile("/usr/local/bin/palera1n"):
-            subprocess.run(["palera1n", "--enter-recovery"], stdout=open(os.devnull, 'wb'))
+            subprocess.run(["palera1n", "--enter-recovery"],
+                           stdout=open(os.devnull, 'wb'))
         else:
             try:
                 subprocess.run(["sudo", "mkdir", "-p", "/usr/local/bin"])
-                subprocess.run(["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
-                subprocess.run(["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
+                subprocess.run(
+                    ["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
+                subprocess.run(
+                    ["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
                 try:
-                    subprocess.run(["palera1n", "--enter-recovery"], stdout=open(os.devnull, 'wb'))
-                    print(f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully entered recovery mode!")
+                    subprocess.run(["palera1n", "--enter-recovery"],
+                                   stdout=open(os.devnull, 'wb'))
+                    print(
+                        f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully entered recovery mode!")
                 except subprocess.CalledProcessError as e:
-                    print(f"{Colors.WARNING} [Error] {Colors.FAIL}Failed to enter recovery mode: {e}")
+                    print(
+                        f"{Colors.WARNING} [Error] {Colors.FAIL}Failed to enter recovery mode: {e}")
                 except Exception as e:
-                    print(f"{Colors.WARNING} [Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                    print(
+                        f"{Colors.WARNING} [Error] {Colors.FAIL}An unexpected error occurred: {e}")
             except subprocess.CalledProcessError as e:
-                        print(f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
+                print(
+                    f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
             except Exception as e:
-                        print(f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                print(
+                    f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
     elif option == "4":
         if os.path.isfile("/usr/local/bin/palera1n"):
-            subprocess.run(["palera1n", "--exit-recovery"], stdout=open(os.devnull, 'wb'))
+            subprocess.run(["palera1n", "--exit-recovery"],
+                           stdout=open(os.devnull, 'wb'))
         else:
             try:
                 subprocess.run(["sudo", "mkdir", "-p", "/usr/local/bin"])
-                subprocess.run(["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
-                subprocess.run(["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
+                subprocess.run(
+                    ["sudo", "cp", "lib/palera1n-macos-universal", "/usr/local/bin/palera1n"])
+                subprocess.run(
+                    ["sudo", "chmod", "+x", "/usr/local/bin/palera1n"])
                 try:
-                    subprocess.run(["palera1n", "--exit-recovery"], stdout=open(os.devnull, 'wb'))
-                    print(f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully exited recovery mode!")
+                    subprocess.run(["palera1n", "--exit-recovery"],
+                                   stdout=open(os.devnull, 'wb'))
+                    print(
+                        f"{Colors.OKBLUE} [Success] {Colors.OKGREEN} Successfully exited recovery mode!")
                 except subprocess.CalledProcessError as e:
-                    print(f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to exit recovery mode: {e}")
+                    print(
+                        f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to exit recovery mode: {e}")
                 except Exception as e:
-                    print(f"{Colors.WARNING} [Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                    print(
+                        f"{Colors.WARNING} [Error] {Colors.FAIL}An unexpected error occurred: {e}")
             except subprocess.CalledProcessError as e:
-                        print(f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
+                print(
+                    f"{Colors.WARNING} [Critical Error] {Colors.FAIL}Failed to install or move Palera1n: {e}")
             except Exception as e:
-                        print(f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
+                print(
+                    f"{Colors.WARNING} [Critical Error] {Colors.FAIL}An unexpected error occurred: {e}")
     else:
         print(Colors.FAIL + "Invalid option selected." + Colors.ENDC)
 
