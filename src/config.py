@@ -1,5 +1,5 @@
 class Info:
-    version = "0.1.2-beta",
+    version = "0.1.2-canary",
     jb_handler_ver = "0.1-alpha"
 
 class Config: 
