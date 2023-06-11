@@ -63,8 +63,9 @@ def device_info():
     devices = get_connected_ios_devices()
     idevice_list_output = subprocess.check_output(["idevice_id", "-l"]).decode("utf-8")
     udid_list = idevice_list_output.strip().splitlines()
-    udid = udid_list[0]
-    if len(devices) > 0:
+    
+    if len(udid_list) > 0:
+        udid = udid_list[0]
         click.echo(click.style("Connected Device", fg="cyan"))
         click.echo()
         for i, device in enumerate(devices):
@@ -78,9 +79,13 @@ def device_info():
             # click.echo(click.style(f"  \u2514\u2500\u2500 Info2:", fg="magenta"))
 
             click.echo()
+    else:
+        click.echo(click.style("No connected devices found.", fg="yellow"))
+
 
 def connected_devices():
     device_info()
+
 
 def enter_dfu():
     devices = get_connected_ios_devices()

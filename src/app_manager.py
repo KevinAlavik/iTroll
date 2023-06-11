@@ -12,5 +12,3 @@ def app_manager():
     click.echo(click.style("App Manager function called.", fg="magenta"))
     # Add code for the app management functionality
 
-# Move the import statement here
-from main import main
