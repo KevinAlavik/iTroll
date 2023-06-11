@@ -9,7 +9,7 @@ cd iTroll/src
 
 ## Usage 
 ```bash
-sudo python3 main.py
+python3 main.py
 ```
 ## Whats different?
 - Whole new CLI system
