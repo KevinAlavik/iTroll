@@ -1,7 +1,7 @@
 # iTroll - v0.1.2-beta
 ## Installing
 ```bash
-git clone [https://github.com/kevinalavik/iTroll/0.1.2-beta](https://github.com/kevinalavik/iTroll/tree/0.1.2-beta)
+git clone https://github.com/kevinalavik/iTroll/tree/0.1.2-beta
 ```
 ```bash
 cd iTroll/src
